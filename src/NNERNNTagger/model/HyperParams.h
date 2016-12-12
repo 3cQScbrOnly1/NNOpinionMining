@@ -36,9 +36,7 @@ public:
 
 	void setReqared(Options& opt){
 		rnnHiddenSize = opt.rnnHiddenSize;
-		charContext = opt.charcontext;
 		wordContext = opt.wordcontext;
-		charHiddenSize = opt.charhiddenSize;
 		hiddenSize = opt.hiddenSize;
 		dropProb = opt.dropProb;
 		nnRegular = opt.regParameter;

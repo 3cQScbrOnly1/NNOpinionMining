@@ -11,7 +11,9 @@ public:
 public:
 	// node instances
 	vector<LookupNode> _word_inputs;
-	RNNBuilder _output;
+	WindowBuilder _word_window;
+	RNNBuilder _rnn;
+	vector<LinearNode> _output;
 public:
 	ComputionGraph() : Graph(){
 	}
@@ -24,11 +26,15 @@ public:
 	//allocate enough nodes 
 	inline void createNodes(int sent_size, int char_size){
 		_word_inputs.resize(sent_size);
+		_word_window.resize(sent_size);
+		_rnn.resize(sent_size);
 		_output.resize(sent_size);
 	}
 
 	inline void clear(){
 		_word_inputs.clear();
+		_word_window.clear();
+		_rnn.clear();
 		_output.clear();
 	}
 
@@ -38,8 +44,11 @@ public:
 		for (int idx = 0; idx < word_max_size; idx++) {
 			_word_inputs[idx].setParam(&model_params.words);
 			_word_inputs[idx].init(hyper_params.wordDim, hyper_params.dropProb, mem);
+			_output[idx].setParam(&model_params._uni_params);
+			_output[idx].init(hyper_params.labelSize, -1, mem);
 		}
-		_output.init(&model_params._rnn_layer, hyper_params.dropProb, true, mem);
+		_word_window.init(hyper_params.wordDim, hyper_params.wordContext, mem);
+		_rnn.init(&model_params._rnn_layer, hyper_params.dropProb, true, mem);
 	}
 
 
@@ -53,7 +62,11 @@ public:
 			const Feature& feature = features[idx];
 			_word_inputs[idx].forward(this, feature.words[0]);
 		}
-		_output.forward(this, getPNodes(_word_inputs, seq_size));
+		_word_window.forward(this, getPNodes(_word_inputs, seq_size));
+		_rnn.forward(this, getPNodes(_word_window._outputs, seq_size));
+		for (int idx = 0; idx < seq_size; idx++) {
+			_output[idx].forward(this, &_rnn._output[idx]);
+		}
 	}
 
 };

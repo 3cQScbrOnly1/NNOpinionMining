@@ -71,7 +71,7 @@ public:
 			//cost += _loss.loss(&(_pcg->_output[idx]), example.m_labels[idx], _eval, example_num);				
 			//}
 			for (int idx = 0; idx < seq_size; idx++)
-				cost += _model_params._loss.loss(&_pcg->_output._output[idx], example.m_labels[idx], _eval, example_num);
+				cost += _model_params._loss.loss(&_pcg->_output[idx], example.m_labels[idx], _eval, example_num);
 
 			// backward, which exists only for training 
 			_pcg->backward();
@@ -93,7 +93,7 @@ public:
 		//}
 		for (int idx = 0; idx < seq_size; idx++) {
 			int result;
-			_model_params._loss.predict(&_pcg->_output._output[idx], result);
+			_model_params._loss.predict(&_pcg->_output[idx], result);
 			results.push_back(result);
 		}
 	}
@@ -109,7 +109,7 @@ public:
 		//	cost += _loss.cost(&(_pcg->_output[idx]), example.m_labels[idx], 1);
 		//}
 		for (int idx = 0; idx < seq_size; idx++)
-			cost += _model_params._loss.cost(&_pcg->_output._output[idx], example.m_labels[idx], 1);
+			cost += _model_params._loss.cost(&_pcg->_output[idx], example.m_labels[idx], 1);
 
 		return cost;
 	}
