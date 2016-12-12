@@ -12,7 +12,7 @@ public:
 	// node instances
 	vector<LookupNode> _word_inputs;
 	WindowBuilder _word_window;
-	RNNBuilder _rnn;
+	ERNNBuilder _rnn;
 	vector<LinearNode> _output;
 public:
 	ComputionGraph() : Graph(){

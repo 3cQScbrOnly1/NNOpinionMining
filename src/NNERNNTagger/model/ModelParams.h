@@ -2,13 +2,14 @@
 #define SRC_ModelParams_H_
 
 #include "HyperParams.h"
+#include "ERNN.h"
 
 // Each model consists of two parts, building neural graph and defining output losses.
 class ModelParams{
 
 public:
 	LookupTable words;
-	RNNParams _rnn_layer;
+	ERNNParams _rnn_layer;
 	UniParams _uni_params;
 
 	Alphabet _linear_feature;
