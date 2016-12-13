@@ -58,6 +58,11 @@ public:
 		int example_num = examples.size();
 		dtype cost = 0.0;
 
+		int batch_num = 0;
+		for (int count = 0; count < example_num; count++) {
+			const Example& example = examples[count];
+			batch_num += example.m_features.size();
+		}
 
 		for (int count = 0; count < example_num; count++) {
 			const Example& example = examples[count];
@@ -71,7 +76,7 @@ public:
 			//cost += _loss.loss(&(_pcg->_output[idx]), example.m_labels[idx], _eval, example_num);				
 			//}
 			for (int idx = 0; idx < seq_size; idx++)
-				cost += _model_params._loss.loss(&_pcg->_output[idx], example.m_labels[idx], _eval, example_num);
+				cost += _model_params._loss.loss(&_pcg->_output[idx], example.m_labels[idx], _eval, batch_num);
 
 			// backward, which exists only for training 
 			_pcg->backward();
