@@ -56,7 +56,7 @@ public:
 			_hidden_layer[idx].setParam(&model_params._uni_tanh_project);
 			_hidden_layer[idx].init(hyper_params.hiddenSize, hyper_params.dropProb, mem);
 			_lstm_combine[idx].setParam(&model_params._bi_tanh_project);
-			_lstm_combine[idx].init(hyper_params.rnnHiddenSize, -1, mem);
+			_lstm_combine[idx].init(hyper_params.hiddenSize, -1, mem);
 			_output[idx].setParam(&model_params._linear_project);
 			_output[idx].init(hyper_params.labelSize, -1, mem);
 		}

@@ -32,7 +32,7 @@ public:
 		_lstm_left_project.initial(hyper_params.rnnHiddenSize, hyper_params.hiddenSize, mem);
 		_lstm_right_project.initial(hyper_params.rnnHiddenSize, hyper_params.hiddenSize, mem);
 		_bi_tanh_project.initial(hyper_params.hiddenSize, hyper_params.rnnHiddenSize, hyper_params.rnnHiddenSize, true, mem);
-		hyper_params.inputSize = hyper_params.rnnHiddenSize;
+		hyper_params.inputSize = hyper_params.hiddenSize;
 		_linear_project.initial(hyper_params.labelSize, hyper_params.inputSize, false, mem);
 		return true;
 	}
