@@ -211,13 +211,13 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	}
 
 	m_word_stats[unknownkey] = m_options.wordCutOff + 1;
-	m_char_stats[unknownkey] = m_options.wordCutOff + 1;
+	m_char_stats[unknownkey] = m_options.charCutOff + 1;
 
 	m_driver._model_params._linear_feature.initial(m_feat_stats);
-	m_driver._model_params._word_alpha.initial(m_word_stats);
-	m_driver._model_params._char_alpha.initial(m_char_stats);
+	m_driver._model_params._word_alpha.initial(m_word_stats, m_options.wordCutOff);
+	m_driver._model_params._char_alpha.initial(m_char_stats, m_options.charCutOff);
 	if (m_options.wordFile != "")
-		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune);
+		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune, false);
 	else
 		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordEmbSize, m_options.wordEmbFineTune);
 
@@ -263,7 +263,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 			eval.correct_label_count += m_driver._eval.correct_label_count;
 
 			if ((curUpdateIter + 1) % m_options.verboseIter == 0) {
-				//m_driver.checkgrad(subExamples, curUpdateIter + 1);
+				m_driver.checkgrad(subExamples, curUpdateIter + 1);
 				std::cout << "current: " << updateIter + 1 << ", total block: " << batchBlock << std::endl;
 				std::cout << "Cost = " << cost << ", Tag Correct(%) = " << eval.getAccuracy() << std::endl;
 			}
