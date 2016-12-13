@@ -284,7 +284,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 				if (m_options.seg)
 					devInsts[idx].SegEvaluate(result_labels, metric_dev);
 				else
-					devInsts[idx].MiningEvaluate(result_labels, metric_dev);
+					devInsts[idx].Evaluate(result_labels, metric_dev);
 
 				if (!m_options.outBest.empty()) {
 					curDecodeInst.copyValuesFrom(devInsts[idx]);
@@ -313,7 +313,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 					if (m_options.seg)
 						testInsts[idx].SegEvaluate(result_labels, metric_test);
 					else
-						testInsts[idx].MiningEvaluate(result_labels, metric_test);
+						testInsts[idx].Evaluate(result_labels, metric_test);
 
 					if (bCurIterBetter && !m_options.outBest.empty()) {
 						curDecodeInst.copyValuesFrom(testInsts[idx]);
@@ -342,7 +342,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 					if (m_options.seg)
 						otherInsts[idx][idy].SegEvaluate(result_labels, metric_test);
 					else
-						otherInsts[idx][idy].MiningEvaluate(result_labels, metric_test);
+						otherInsts[idx][idy].Evaluate(result_labels, metric_test);
 
 					if (bCurIterBetter && !m_options.outBest.empty()) {
 						curDecodeInst.copyValuesFrom(otherInsts[idx][idy]);
