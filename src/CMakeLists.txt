@@ -5,3 +5,4 @@ include_directories(
 
 
 add_subdirectory(NNERNNTagger)
+add_subdirectory(NNBiLSTMTagger)
