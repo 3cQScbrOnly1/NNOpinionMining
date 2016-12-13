@@ -16,6 +16,7 @@ struct ERNNParams {
 
 	inline void initial(int nOSize, int nISize, AlignedMemoryPool* mem = NULL) {
 		_rnn.initial(nOSize, nOSize, nISize, true, mem);
+		_rnn.b.val = 0 ;
 	}
 
 	inline int inDim(){
