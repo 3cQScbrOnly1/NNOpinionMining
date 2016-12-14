@@ -217,7 +217,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	m_driver._model_params._word_alpha.initial(m_word_stats, m_options.wordCutOff);
 	m_driver._model_params._char_alpha.initial(m_char_stats, m_options.charCutOff);
 	if (m_options.wordFile != "")
-		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune, true);
+		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune, m_options.wordNormalize);
 	else
 		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordEmbSize, m_options.wordEmbFineTune);
 

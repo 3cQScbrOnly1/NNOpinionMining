@@ -31,6 +31,7 @@ public:
   int wordEmbSize;
   int wordcontext;
   bool wordEmbFineTune;
+  bool wordNormalize;
 
   int charEmbSize;
   int charcontext;
@@ -77,6 +78,7 @@ public:
     wordEmbSize = 50;
     wordcontext = 2;
     wordEmbFineTune = true;
+	wordNormalize = true;
     charEmbSize = 50;
     charcontext = 2;
     charEmbFineTune = true;
@@ -145,6 +147,8 @@ public:
         wordEmbSize = atoi(pr.second.c_str());
       if (pr.first == "wordEmbFineTune")
         wordEmbFineTune = (pr.second == "true") ? true : false;
+      if (pr.first == "wordNormalize")
+        wordNormalize = (pr.second == "true") ? true : false;
       if (pr.first == "charcontext")
         charcontext = atoi(pr.second.c_str());
       if (pr.first == "charEmbSize")
@@ -210,6 +214,7 @@ public:
     std::cout << "wordEmbSize = " << wordEmbSize << std::endl;
     std::cout << "wordcontext = " << wordcontext << std::endl;
     std::cout << "wordEmbFineTune = " << wordEmbFineTune << std::endl;
+    std::cout << "wordNormalize = " << wordNormalize << std::endl;
     std::cout << "charEmbSize = " << charEmbSize << std::endl;
     std::cout << "charcontext = " << charcontext << std::endl;
     std::cout << "charEmbFineTune = " << charEmbFineTune << std::endl;
