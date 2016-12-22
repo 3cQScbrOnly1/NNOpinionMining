@@ -44,7 +44,7 @@ public:
 
 public:
 
-	int createAlphabet(const vector<Instance>& vecTrainInsts);
+	int createAlphabet(const vector<Instance>& vecTrainInsts, HyperParams& hyper_params);
 	int addTestAlpha(const vector<Instance>& vecInsts);
 
 

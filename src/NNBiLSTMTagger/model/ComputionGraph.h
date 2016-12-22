@@ -17,6 +17,8 @@ public:
 	LSTMBuilder _lstm_right;
 	vector<BiNode> _lstm_combine;
 	vector<LinearNode> _output;
+
+	unordered_map<string, int>* p_word_stats;
 public:
 	ComputionGraph() : Graph(){
 	}
@@ -63,8 +65,25 @@ public:
 		_word_window.init(hyper_params.wordDim, hyper_params.wordContext, mem);
 		_lstm_left.init(&model_params._lstm_left_project, hyper_params.dropProb, true, mem);
 		_lstm_right.init(&model_params._lstm_right_project, hyper_params.dropProb, false, mem);
+		p_word_stats = hyper_params.hyper_word_stats;
 	}
 
+public:
+	string p_change_word(const string& word){
+		double p = 0.5;
+		unordered_map<string, int>::iterator it;
+		it = p_word_stats->find(word);
+		if (it == p_word_stats->end() || it->second == 1)
+		{
+			double x = rand() / double(RAND_MAX);
+			if (x > p)
+				return unknownkey;
+			else
+				return word;
+		}
+		else
+			return word;
+	}
 
 public:
 	// some nodes may behave different during training and decode, for example, dropout
@@ -74,7 +93,10 @@ public:
 		max_sentence_length > features.size() ? seq_size = features.size() : seq_size = max_sentence_length;
 		for (int idx = 0; idx < seq_size; idx++) {
 			const Feature& feature = features[idx];
-			_word_inputs[idx].forward(this, feature.words[0]);
+			if (bTrain)
+				_word_inputs[idx].forward(this, p_change_word(feature.words[0]));
+			else
+				_word_inputs[idx].forward(this, feature.words[0]);
 		}
 		_word_window.forward(this, getPNodes(_word_inputs, seq_size));
 		for (int idx = 0; idx < seq_size; idx++) {

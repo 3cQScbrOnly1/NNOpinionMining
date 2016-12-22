@@ -26,6 +26,8 @@ struct HyperParams{
 	int inputSize;
 	int labelSize;
 
+	
+	unordered_map<string, int>* hyper_word_stats;
 	// for optimization
 	dtype nnRegular, adaAlpha, adaEps;
 
@@ -54,7 +56,9 @@ public:
 		return bAssigned;
 	}
 
-	void print(){}
+	void print(){
+		cout << "word num in hyper params: " << hyper_word_stats->size() << endl;
+	}
 
 private:
 	bool bAssigned;

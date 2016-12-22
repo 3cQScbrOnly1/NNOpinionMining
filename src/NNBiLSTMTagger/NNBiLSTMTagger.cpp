@@ -17,7 +17,7 @@ Tagger::~Tagger() {
 	// TODO Auto-generated destructor stub
 }
 
-int Tagger::createAlphabet(const vector<Instance>& vecInsts) {
+int Tagger::createAlphabet(const vector<Instance>& vecInsts, HyperParams& hyper_params) {
 	if (vecInsts.size() == 0) {
 		std::cout << "trainning set empty" << std::endl;
 		return -1;
@@ -55,7 +55,7 @@ int Tagger::createAlphabet(const vector<Instance>& vecInsts) {
 		if (m_options.maxInstance > 0 && numInstance == m_options.maxInstance)
 			break;
 	}
-
+	hyper_params.hyper_word_stats = &m_word_stats;
 	std::cout << "Label num: " << m_driver._model_params._label_alpha.size() << std::endl;
 	std::cout << "Total word num: " << m_word_stats.size() << std::endl;
 	std::cout << "Total char num: " << m_char_stats.size() << std::endl;
@@ -192,7 +192,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	//std::cout << "Dev example number: " << trainInsts.size() << std::endl;
 	//std::cout << "Test example number: " << trainInsts.size() << std::endl;
 
-	createAlphabet(trainInsts);
+	createAlphabet(trainInsts, m_driver._hyper_params);
 	//addTestAlpha(devInsts);
 	//addTestAlpha(testInsts);
 	for (int idx = 0; idx < otherInsts.size(); idx++)
