@@ -73,7 +73,7 @@ public:
 		double p = 0.5;
 		unordered_map<string, int>::iterator it;
 		it = p_word_stats->find(word);
-		if (it->second == 1)
+		if (it != p_word_stats->end() && it->second == 1)
 		{
 			double x = rand() / double(RAND_MAX);
 			if (x > p)
