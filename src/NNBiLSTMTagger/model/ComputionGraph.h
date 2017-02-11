@@ -11,6 +11,8 @@ public:
 public:
 	// node instances
 	vector<LookupNode> _word_inputs;
+	vector<LookupNode> _ext_word_inputs;
+	vector<ConcatNode> _word_concats;
 	WindowBuilder _word_window;
 	vector<UniNode> _hidden_layer;
 	LSTMBuilder _lstm_left;
@@ -29,8 +31,10 @@ public:
 
 public:
 	//allocate enough nodes 
-	inline void createNodes(int sent_size, int char_size){
+	inline void createNodes(int sent_size){
 		_word_inputs.resize(sent_size);
+		_ext_word_inputs.resize(sent_size);
+		_word_concats.resize(sent_size);
 		_word_window.resize(sent_size);
 		_hidden_layer.resize(sent_size);
 		_lstm_left.resize(sent_size);
@@ -41,6 +45,8 @@ public:
 
 	inline void clear(){
 		_word_inputs.clear();
+		_ext_word_inputs.clear();
+		_word_concats.clear();
 		_word_window.clear();
 		_hidden_layer.clear();
 		_lstm_left.clear();
@@ -53,8 +59,11 @@ public:
 	inline void initial(ModelParams& model_params, HyperParams& hyper_params, AlignedMemoryPool* mem = NULL){
 		int word_max_size = _word_inputs.size();
 		for (int idx = 0; idx < word_max_size; idx++) {
-			_word_inputs[idx].setParam(&model_params.words);
+			_word_inputs[idx].setParam(&model_params._words);
 			_word_inputs[idx].init(hyper_params.wordDim, hyper_params.dropProb, mem);
+			_ext_word_inputs[idx].setParam(&model_params._ext_words);
+			_ext_word_inputs[idx].init(hyper_params.extWordDim, hyper_params.dropProb, mem);
+			_word_concats[idx].init(hyper_params.wordDim + hyper_params.extWordDim, -1, mem);
 			_hidden_layer[idx].setParam(&model_params._uni_tanh_project);
 			_hidden_layer[idx].init(hyper_params.hiddenSize, hyper_params.dropProb, mem);
 			_lstm_combine[idx].setParam(&model_params._bi_tanh_project);
@@ -62,7 +71,7 @@ public:
 			_output[idx].setParam(&model_params._linear_project);
 			_output[idx].init(hyper_params.labelSize, -1, mem);
 		}
-		_word_window.init(hyper_params.wordDim, hyper_params.wordContext, mem);
+		_word_window.init(hyper_params.wordDim + hyper_params.extWordDim, hyper_params.wordContext, mem);
 		_lstm_left.init(&model_params._lstm_left_project, hyper_params.dropProb, true, mem);
 		_lstm_right.init(&model_params._lstm_right_project, hyper_params.dropProb, false, mem);
 		p_word_stats = hyper_params.hyper_word_stats;
@@ -93,12 +102,19 @@ public:
 		max_sentence_length > features.size() ? seq_size = features.size() : seq_size = max_sentence_length;
 		for (int idx = 0; idx < seq_size; idx++) {
 			const Feature& feature = features[idx];
+			string the_word;
 			if (bTrain)
-				_word_inputs[idx].forward(this, p_change_word(feature.words[0]));
+				the_word = p_change_word(feature.words[0]);
 			else
-				_word_inputs[idx].forward(this, feature.words[0]);
+				the_word = feature.words[0];
+
+			_word_inputs[idx].forward(this, the_word);
+			_ext_word_inputs[idx].forward(this, the_word);
 		}
-		_word_window.forward(this, getPNodes(_word_inputs, seq_size));
+		for (int idx = 0; idx < seq_size; idx++) {
+			_word_concats[idx].forward(this, &_word_inputs[idx], &_ext_word_inputs[idx]);
+		}
+		_word_window.forward(this, getPNodes(_word_concats , seq_size));
 		for (int idx = 0; idx < seq_size; idx++) {
 			_hidden_layer[idx].forward(this, &_word_window._outputs[idx]);
 		}

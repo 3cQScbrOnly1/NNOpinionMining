@@ -40,10 +40,6 @@ int Tagger::createAlphabet(const vector<Instance>& vecInsts, HyperParams& hyper_
 
 			string curword = normalize_to_lowerwithdigit(words[i]);
 			m_word_stats[curword]++;
-			for (int j = 0; j < charfeatures[i].size(); j++)
-				m_char_stats[charfeatures[i][j]]++;
-			for (int j = 0; j < sparsefeatures[i].size(); j++)
-				m_feat_stats[sparsefeatures[i][j]]++;
 		}
 
 		if ((numInstance + 1) % m_options.verboseIter == 0) {
@@ -55,11 +51,11 @@ int Tagger::createAlphabet(const vector<Instance>& vecInsts, HyperParams& hyper_
 		if (m_options.maxInstance > 0 && numInstance == m_options.maxInstance)
 			break;
 	}
+	if (m_options.wordFile != "")
+		m_driver._model_params._ext_word_alpha.initial(m_options.wordFile);
 	hyper_params.hyper_word_stats = &m_word_stats;
 	std::cout << "Label num: " << m_driver._model_params._label_alpha.size() << std::endl;
 	std::cout << "Total word num: " << m_word_stats.size() << std::endl;
-	std::cout << "Total char num: " << m_char_stats.size() << std::endl;
-	std::cout << "Total feature num: " << m_feat_stats.size() << std::endl;
 	return 0;
 }
 
@@ -75,12 +71,8 @@ int Tagger::addTestAlpha(const vector<Instance>& vecInsts) {
 		int curInstSize = words.size();
 		for (int i = 0; i < curInstSize; ++i) {
 			string curword = normalize_to_lowerwithdigit(words[i]);
-			if (!m_options.wordEmbFineTune)m_word_stats[curword]++;
-			if (!m_options.charEmbFineTune){
-				for (int j = 1; j < charfeatures[i].size(); j++){
-					m_char_stats[charfeatures[i][j]]++;
-				}
-			}
+			if (!m_options.wordEmbFineTune)
+				m_word_stats[curword]++;
 		}
 
 		if ((numInstance + 1) % m_options.verboseIter == 0) {
@@ -193,8 +185,8 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	//std::cout << "Test example number: " << trainInsts.size() << std::endl;
 
 	createAlphabet(trainInsts, m_driver._hyper_params);
-	//addTestAlpha(devInsts);
-	//addTestAlpha(testInsts);
+	addTestAlpha(devInsts);
+	addTestAlpha(testInsts);
 	for (int idx = 0; idx < otherInsts.size(); idx++)
 		addTestAlpha(otherInsts[idx]);
 
@@ -211,14 +203,13 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	}
 
 	m_word_stats[unknownkey] = m_options.wordCutOff + 1;
-	m_char_stats[unknownkey] = m_options.charCutOff + 1;
 
-	m_driver._model_params._linear_feature.initial(m_feat_stats);
 	m_driver._model_params._word_alpha.initial(m_word_stats, m_options.wordCutOff);
-	if (m_options.wordFile != "")
-		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune, m_options.wordNormalize);
-	else
-		m_driver._model_params.words.initial(&m_driver._model_params._word_alpha, m_options.wordEmbSize, m_options.wordEmbFineTune);
+	//if (m_options.wordFile != "")
+		//m_driver._model_params._words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune, m_options.wordNormalize);
+	//else
+	m_driver._model_params._words.initial(&m_driver._model_params._word_alpha, m_options.wordEmbSize,true);
+	m_driver._model_params._ext_words.initial(&m_driver._model_params._ext_word_alpha, m_options.wordFile, false, m_options.wordNormalize);
 
 	m_driver._hyper_params.setReqared(m_options);
 	m_driver.initial();

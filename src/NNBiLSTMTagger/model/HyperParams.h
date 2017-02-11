@@ -22,6 +22,7 @@ struct HyperParams{
 	int charWindow;
 	int wordWindow;
 	int wordDim;
+	int extWordDim;
 	int charDim;
 	int inputSize;
 	int labelSize;

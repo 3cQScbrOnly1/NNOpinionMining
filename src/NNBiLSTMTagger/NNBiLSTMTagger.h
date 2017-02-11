@@ -26,9 +26,7 @@ class Tagger {
 
 
 public:
-	unordered_map<string, int> m_feat_stats;
 	unordered_map<string, int> m_word_stats;
-	unordered_map<string, int> m_char_stats;
 
 public:
 	Options m_options;
@@ -48,7 +46,6 @@ public:
 	int addTestAlpha(const vector<Instance>& vecInsts);
 
 
-	void extractLinearFeatures(vector<string>& features, const Instance* pInstance, int idx);
 	void extractFeature(Feature& feat, const Instance* pInstance, int idx);
 
 	void convert2Example(const Instance* pInstance, Example& exam);

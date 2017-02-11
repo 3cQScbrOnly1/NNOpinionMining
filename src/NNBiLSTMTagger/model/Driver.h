@@ -37,7 +37,7 @@ public:
 		_hyper_params.print();
 
 		_pcg = new ComputionGraph();
-		_pcg->createNodes(ComputionGraph::max_sentence_length, ComputionGraph::max_char_length);
+		_pcg->createNodes(ComputionGraph::max_sentence_length);
 		_pcg->initial(_model_params, _hyper_params, &_aligned_mem);
 
 		std::cout << "allocated memory: " << _aligned_mem.capacity << ", total required memory: " << _aligned_mem.required << ", perc = " << _aligned_mem.capacity*1.0 / _aligned_mem.required << std::endl;

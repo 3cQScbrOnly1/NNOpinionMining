@@ -7,16 +7,16 @@
 class ModelParams{
 
 public:
-	LookupTable words;
+	LookupTable _words;
+	LookupTable _ext_words;
 	LSTMParams _lstm_left_project;
 	LSTMParams _lstm_right_project;
 	UniParams _uni_tanh_project;
 	BiParams _bi_tanh_project;
 	UniParams _linear_project;
 
-	Alphabet _linear_feature;
 	Alphabet _word_alpha;
-	Alphabet _char_alpha;
+	Alphabet _ext_word_alpha;
 	Alphabet _label_alpha;
 public:
 	SoftMaxLoss _loss;
@@ -25,10 +25,10 @@ public:
 		if (_label_alpha.size() <= 0 || _word_alpha.size() <= 0)
 			return false;
 		hyper_params.labelSize = _label_alpha.size();
-		hyper_params.linearFeatSize = _linear_feature.size();
-		hyper_params.wordDim = words.nDim;
+		hyper_params.wordDim = _words.nDim;
+		hyper_params.extWordDim = _ext_words.nDim;
 		hyper_params.wordWindow = hyper_params.wordContext * 2 + 1;
-		_uni_tanh_project.initial(hyper_params.hiddenSize, hyper_params.wordWindow * hyper_params.wordDim, true, mem);
+		_uni_tanh_project.initial(hyper_params.hiddenSize, hyper_params.wordWindow * (hyper_params.wordDim + hyper_params.extWordDim), true, mem);
 		_lstm_left_project.initial(hyper_params.rnnHiddenSize, hyper_params.hiddenSize, mem);
 		_lstm_right_project.initial(hyper_params.rnnHiddenSize, hyper_params.hiddenSize, mem);
 		_bi_tanh_project.initial(hyper_params.hiddenSize, hyper_params.rnnHiddenSize, hyper_params.rnnHiddenSize, true, mem);
@@ -38,7 +38,8 @@ public:
 	}
 
 	void exportModelParams(ModelUpdate& ada){
-		words.exportAdaParams(ada);
+		_words.exportAdaParams(ada);
+		_ext_words.exportAdaParams(ada);
 		_lstm_left_project.exportAdaParams(ada);
 		_lstm_right_project.exportAdaParams(ada);
 		_uni_tanh_project.exportAdaParams(ada);
@@ -47,7 +48,7 @@ public:
 	}
 
 	void exportCheckGradParams(CheckGrad& checkgrad){
-		checkgrad.add(&words.E, "words.E");
+		checkgrad.add(&_words.E, "words.E");
 		checkgrad.add(&_uni_tanh_project.W, "_uni_tanh_project.W");
 		checkgrad.add(&_uni_tanh_project.b, "_uni_tanh_project.b");
 		checkgrad.add(&_lstm_left_project.output.W1, "&_lstm_left_project.output.W1");
