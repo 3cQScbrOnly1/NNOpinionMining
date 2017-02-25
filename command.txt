@@ -1,3 +1,7 @@
 cmake .. -DEIGEN3_INCLUDE_DIR=C:\eigen -DN3L_INCLUDE_DIR=D:\LibN3L-2.0
 
--l -train E:\opinion_mining_corpus\train.r -dev E:\opinion_mining_corpus\dev.r -test E:\opinion_mining_corpus\test.r -option E:\opinion_mining_corpus\option.debug
+-l -train E:\opinion_mining_corpus\Laptops.train -dev E:\opinion_mining_corpus\Laptops.dev -test E:\opinion_mining_corpus\Laptops.test -option E:\opinion_mining_corpus\option.debug > E:\opinion_mining_corpus\log_unibuilder\log.pre
+
+-l -train E:\opinion_mining_corpus\Laptops.train -dev E:\opinion_mining_corpus\Laptops.dev -test E:\opinion_mining_corpus\Laptops.test -option E:\opinion_mining_corpus\option.debug > E:\opinion_mining_corpus\log_unibuilder\log.my
+
+-l -train E:\opinion_mining_corpus\Laptops.test -dev E:\opinion_mining_corpus\Laptops.test -test E:\opinion_mining_corpus\Laptops.test -option E:\opinion_mining_corpus\option.debug

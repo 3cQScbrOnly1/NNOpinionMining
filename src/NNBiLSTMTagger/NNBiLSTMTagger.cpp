@@ -59,35 +59,6 @@ int Tagger::createAlphabet(const vector<Instance>& vecInsts, HyperParams& hyper_
 	return 0;
 }
 
-int Tagger::addTestAlpha(const vector<Instance>& vecInsts) {
-	cout << "Adding word Alphabet..." << endl;
-
-
-	for (int numInstance = 0; numInstance < vecInsts.size(); numInstance++) {
-		const Instance *pInstance = &vecInsts[numInstance];
-
-		const vector<string> &words = pInstance->words;
-		const vector<vector<string> > &charfeatures = pInstance->charfeatures;
-		int curInstSize = words.size();
-		for (int i = 0; i < curInstSize; ++i) {
-			string curword = normalize_to_lowerwithdigit(words[i]);
-			if (!m_options.wordEmbFineTune)
-				m_word_stats[curword]++;
-		}
-
-		if ((numInstance + 1) % m_options.verboseIter == 0) {
-			cout << numInstance + 1 << " ";
-			if ((numInstance + 1) % (40 * m_options.verboseIter) == 0)
-				cout << std::endl;
-			cout.flush();
-		}
-		if (m_options.maxInstance > 0 && numInstance == m_options.maxInstance)
-			break;
-	}
-
-	return 0;
-}
-
 void Tagger::extractFeature(Feature& feat, const Instance* pInstance, int idx) {
 	feat.clear();
 
@@ -185,10 +156,6 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	//std::cout << "Test example number: " << trainInsts.size() << std::endl;
 
 	createAlphabet(trainInsts, m_driver._hyper_params);
-	addTestAlpha(devInsts);
-	addTestAlpha(testInsts);
-	for (int idx = 0; idx < otherInsts.size(); idx++)
-		addTestAlpha(otherInsts[idx]);
 
 	vector<Example> trainExamples, devExamples, testExamples;
 	initialExamples(trainInsts, trainExamples);
@@ -205,10 +172,7 @@ void Tagger::train(const string& trainFile, const string& devFile, const string&
 	m_word_stats[unknownkey] = m_options.wordCutOff + 1;
 
 	m_driver._model_params._word_alpha.initial(m_word_stats, m_options.wordCutOff);
-	//if (m_options.wordFile != "")
-		//m_driver._model_params._words.initial(&m_driver._model_params._word_alpha, m_options.wordFile, m_options.wordEmbFineTune, m_options.wordNormalize);
-	//else
-	m_driver._model_params._words.initial(&m_driver._model_params._word_alpha, m_options.wordEmbSize,true);
+	m_driver._model_params._words.initial(&m_driver._model_params._word_alpha, m_options.wordEmbSize, true);
 	m_driver._model_params._ext_words.initial(&m_driver._model_params._ext_word_alpha, m_options.wordFile, false, m_options.wordNormalize);
 
 	m_driver._hyper_params.setReqared(m_options);

@@ -43,8 +43,6 @@ public:
 public:
 
 	int createAlphabet(const vector<Instance>& vecTrainInsts, HyperParams& hyper_params);
-	int addTestAlpha(const vector<Instance>& vecInsts);
-
 
 	void extractFeature(Feature& feat, const Instance* pInstance, int idx);
 
